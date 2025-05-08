@@ -4,6 +4,7 @@ This simple package provides an easy evaluation for the [User Experience Questio
 # Usage Example
 ```py
 import pandas as pd
+from UEQ.UEQ import *
 
 # Data Reading
 data = pd.read_csv("mydata/data.csv", sep="\t", header=0)
