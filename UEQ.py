@@ -24,6 +24,12 @@ def cohend(d1, d2):
 	# calculate the effect size
 	return (u1 - u2) / s
 
+def printPValue(pValue, printZero=True):
+	if(pValue < 0.001): return "< 0.001" if printZero else "< .001"
+	if(pValue < 0.01): return "< 0.01" if printZero else "< .01"
+	if(pValue < 0.05): return "< 0.05" if printZero else "< .05"
+	return f"{pValue:.3f}" if printZero else f"{pValue:.3f}".lstrip('0')
+
 def computeUEQScores(data, columnNames):
     Inverted = [1,1,-1,-1,-1,1,1,1,-1,-1,1,-1,1,1,1,1,-1,-1,-1,1,-1,1,-1,-1,-1,1]
 
