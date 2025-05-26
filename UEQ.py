@@ -1,5 +1,6 @@
 from scipy import stats
-from CommonStatistics import *
+import numpy as np
+import statistics
 
 UEQ_Questions = {
     "Attractiveness" : [1,12,14,16,24,25],
@@ -9,6 +10,19 @@ UEQ_Questions = {
     "Stimulation" : [5,6,7,18],
     "Novelty" : [3,10,15,26]
 }
+
+# Function below from https://machinelearningmastery.com/effect-size-measures-in-python/
+def cohend(d1, d2):
+	# calculate the size of samples
+	n1, n2 = len(d1), len(d2)
+	# calculate the variance of the samples
+	s1, s2 = np.var(d1, ddof=1), np.var(d2, ddof=1)
+	# calculate the pooled standard deviation
+	s = statistics.sqrt(((n1 - 1) * s1 + (n2 - 1) * s2) / (n1 + n2 - 2))
+	# calculate the means of the samples
+	u1, u2 = np.mean(d1), np.mean(d2)
+	# calculate the effect size
+	return (u1 - u2) / s
 
 def computeUEQScores(data, columnNames):
     Inverted = [1,1,-1,-1,-1,1,1,1,-1,-1,1,-1,1,1,1,1,-1,-1,-1,1,-1,1,-1,-1,-1,1]
@@ -81,6 +95,23 @@ def printLatexUEQComparison(data1, data2, paired=False, data1Label="Data1", data
     else:
         output += "\n\t\\caption{Single scales of the User Experience Questionnaire \\cite{laugwitz2008}, where each value is within [-3,3] and marked with a green ($ \\ge0.8$), red ($\\le -0.8$) or yellow arrow for all values in between as done in the evaluation sheet of the questionnaire. In the right-most column, tests for significant differences between both conditions are depicted. Depending on normality (Shapiro-Wilk) and equal variances (Levene), a t-test ($t$), a Welch test ($t_w$) or a Mann-Whitney-U-test ($U$) was computed. Additionally, the effect sizes as defined by Cohen are shown.}"
 
+    output += "\n\t\\label{}"
+    output += "\n\\end{table}"
+    print(output)
+
+def printLatexUEQTable(data):
+    output  = "\\begin{table}"
+    output += "\n\t\\footnotesize"
+    output += "\n\t\\centering"
+    output += "\n\t\\begin{tabular}{c|p{0.1cm}c|c|}"
+    output += "\n\t\t\\cline{2-4}"
+    output += "\n\t\t& \\multicolumn{2}{c|}{Mean} & SD\\\\"
+    output += "\n\t\t\\cline{1-4}"
+    for key in UEQ_Questions:
+        output += f"\n\t\t\t\\multicolumn{{1}}{{|c|}}{{{key}\\rule{{0pt}}{{3mm}}}} & {getArrowColor(data[key].mean())} & {data[key].mean():.2f} & {data[key].std():.2f} \\\\"
+    output += "\n\t\t\\cline{1-4}"
+    output += "\n\t\\end{tabular}"
+    output += "\n\t\\caption{Single scales of the User Experience Questionnaire \\cite{laugwitz2008}, where each value is within [-3,3] and marked with a green ($ \\ge0.8$), red ($\\le -0.8$) or yellow arrow for all values in between as done in the evaluation sheet of the questionnaire. }"
     output += "\n\t\\label{}"
     output += "\n\\end{table}"
     print(output)
