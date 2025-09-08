@@ -68,28 +68,31 @@ def printLatexUEQComparison(data1, data2, paired=False, data1Label="Data1", data
     output += "\n\t\t\\cline{1-10}"
     
     for key in UEQ_Questions:
-        stat1, pVal1 = stats.shapiro(data1[key])
-        stat2, pVal2 = stats.shapiro(data2[key])
+        d1 = data1[key].dropna()
+        d2 = data2[key].dropna()
+
+        stat1, pVal1 = stats.shapiro(d1)
+        stat2, pVal2 = stats.shapiro(d2)
         
-        cd = cohend(data1[key], data2[key])
+        cd = cohend(d1, d2)
 
         if paired:
             if(pVal1 < 0.05 or pVal2 < 0.05):
-                res = stats.wilcoxon(data1[key], data2[key])
+                res = stats.wilcoxon(d1,d2)
                 testStat = f"$W={res.statistic:.2f}$ & ${printPValue(res.pvalue, printZero=False)}$"
             else:
-                res = stats.ttest_rel(data1[key], data2[key])
+                res = stats.ttest_rel(d1,d2)
                 testStat = f"$t_{{rel}}({res.df})={res.statistic:.2f}$ & ${printPValue(res.pvalue, printZero=False)}$"
         else:
-            stat3, pVal3 = stats.levene(data1[key], data2[key])
+            stat3, pVal3 = stats.levene(d1,d2)
             if(pVal1 > 0.05 and pVal2 > 0.05 and pVal3 > 0.05):
-                res = stats.ttest_ind(data1[key], data2[key], equal_var=True)
+                res = stats.ttest_ind(d1,d2, equal_var=True)
                 testStat = f"$t_{{ind}}({res.df})={res.statistic:.2f}$ & ${printPValue(res.pvalue, printZero=False)}$"
             elif(pVal1 > 0.05 and pVal2 > 0.05):
-                res = stats.ttest_ind(data1[key], data2[key], equal_var=False)
+                res = stats.ttest_ind(d1,d2, equal_var=False)
                 testStat = f"$t_{{w}}({res.df})={res.statistic:.2f}$ & ${printPValue(res.pvalue, printZero=False)}$"
             else:
-                res = stats.mannwhitneyu(data1[key], data2[key])
+                res = stats.mannwhitneyu(d1,d2)
                 testStat = f"$U={res.statistic:.2f}$ & ${printPValue(res.pvalue, printZero=False)}$"
 
         output += f"\n\t\t\t\\multicolumn{{1}}{{|c|}}{{{key}\\rule{{0pt}}{{3mm}}}} & {getArrowColor(data1[key].mean())} & {data1[key].mean():.2f} & {data1[key].std():.2f} & {getArrowColor(data2[key].mean())} &	{data2[key].mean():.2f}	& {data2[key].std():.2f} & {testStat} & ${"\\phantom{{-}}" if cd > 0 else ""}{cd:.2f}$\\\\"
