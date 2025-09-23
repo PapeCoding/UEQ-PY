@@ -90,7 +90,7 @@ def printLatexUEQComparison(data1, data2, paired=False, data1Label="Data1", data
                 testStat = f"$t_{{ind}}({res.df})={res.statistic:.2f}$ & ${printPValue(res.pvalue, printZero=False)}$"
             elif(pVal1 > 0.05 and pVal2 > 0.05):
                 res = stats.ttest_ind(d1,d2, equal_var=False)
-                testStat = f"$t_{{w}}({res.df})={res.statistic:.2f}$ & ${printPValue(res.pvalue, printZero=False)}$"
+                testStat = f"$t_{{w}}({res.df:.2f})={res.statistic:.2f}$ & ${printPValue(res.pvalue, printZero=False)}$"
             else:
                 res = stats.mannwhitneyu(d1,d2)
                 testStat = f"$U={res.statistic:.2f}$ & ${printPValue(res.pvalue, printZero=False)}$"
